@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Healthcare Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Page 1 - Landing */
+        .page {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .landing-page {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 0 50px;
+            gap: 50px;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #2d4a3e;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #b85450 0%, #a04844 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(180, 84, 80, 0.3);
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(180, 84, 80, 0.4);
+        }
+
+        .phone-mockup {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInRight 1s ease-out 0.6s both;
+        }
+
+        .phone {
+            width: 320px;
+            height: 640px;
+            background: #000;
+            border-radius: 35px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .chat-interface {
+            padding: 20px;
+            height: calc(100% - 44px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chat-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d4a3e;
+            margin-bottom: 5px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: messageSlide 0.5s ease-out;
+            white-space: pre-line;
+            word-wrap: break-word;
+        }
+
+        .ai-message {
+            background: #b85450;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+        }
+
+        .user-message {
+            background: #2d4a3e;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        /* Page 2 - Dashboard */
+        .dashboard-page {
+            padding: 40px 20px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: #2d4a3e;
+            margin-bottom: 20px;
+        }
+
+        .ai-chat-banner {
+            background: linear-gradient(135deg, #b85450 0%, #a04844 100%);
+            border-radius: 25px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(180, 84, 80, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .ai-chat-banner:hover {
+            transform: translateY(-5px);
+        }
+
+        .banner-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .banner-arrow {
+            font-size: 24px;
+            background: rgba(255,255,255,0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border-color: #b85450;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d4a3e;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .feature-button {
+            background: linear-gradient(135deg, #b85450 0%, #a04844 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(180, 84, 80, 0.3);
+        }
+
+        .feature-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(180, 84, 80, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        /* AI Chat Modal */
+        .ai-chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .ai-chat-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .chat-modal-header {
+            background: #2d4a3e;
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .chat-modal-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            border-color: #b85450;
+        }
+
+        .send-button {
+            background: #b85450;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading-indicator.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #eee;
+            border-top: 2px solid #b85450;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-button {
+            background: #2d4a3e;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #b85450;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .landing-page {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phone {
+                width: 280px;
+                height: 560px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+   <!-- Page 1: Landing -->
+   <div class="page active" id="page1">
+       <div class="container">
+           <div class="landing-page">
+               <div class="hero-content">
+                   <h1 class="hero-title">Your Virtual Healthcare Chatbot</h1>
+                   <p class="hero-subtitle">Get instant medical guidance with our AI-powered healthcare assistant. Available 24/7 for your health concerns.</p>
+                   <button class="cta-button" onclick="nextPage()">Get Started →</button>
+               </div>
+              
+               <div class="phone-mockup">
+                   <div class="phone">
+                       <div class="phone-screen">
+                           <div class="status-bar">
+                               <span>9:41</span>
+                               <span>●●● ◯ 📶 🔋</span>
+                           </div>
+                           <div class="chat-interface">
+                               <div class="chat-header">
+                                   <div class="chat-title">AI MD How it works:</div>
+                               </div>
+                               <div class="chat-messages">
+                                   <div class="message ai-message">
+                                       Hello! I'm your AI MD, here to provide medical guidance based on your symptoms. How can I help you today?
+                                   </div>
+                                   <div class="message user-message">
+                                       I have a headache on the right side that feels like throbbing pain. It's been going on for about 7 hours.
+                                   </div>
+                                   <div class="message ai-message">
+                                       Based on your symptoms, this could be a migraine. I'd recommend seeing a healthcare provider for proper evaluation.
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- Page 2: Dashboard -->
+   <div class="page" id="page2">
+       <div class="container">
+           <div class="dashboard-page">
+               <div class="dashboard-header">
+                   <h1 class="dashboard-title">Healthcare Dashboard</h1>
+                   <p>Access all your health tools and AI assistance in one place</p>
+               </div>
+
+               <div class="ai-chat-banner" onclick="openAIChat()">
+                   <div class="banner-content">
+                       <h3>🤖 AI Health Assistant</h3>
+                       <p>Chat with our AI doctor for instant medical guidance</p>
+                   </div>
+                   <div class="banner-arrow">→</div>
+               </div>
+
+               <div class="features-grid">
+                   <div class="feature-card">
+                       <div class="feature-icon">👩‍⚕️</div>
+                       <h3 class="feature-title">Teleconsultation</h3>
+                       <p class="feature-description">Connect with licensed healthcare providers through secure video calls</p>
+                       <a href="teleconsultation.html" class="feature-button">Book Now</a>
+                   </div>
+
+                   <div class="feature-card">
+                       <div class="feature-icon">🛡️</div>
+                       <h3 class="feature-title">Insurance Assistance</h3>
+                       <p class="feature-description">Get help with insurance claims and coverage information</p>
+                       <a href="insurance.html" class="feature-button">Get Help</a>
+                   </div>
+
+                
+
+                   <div class="feature-card">
+                       <div class="feature-icon">💊</div>
+                       <h3 class="feature-title">Medication Reminders</h3>
+                       <p class="feature-description">Never miss a dose with smart medication scheduling</p>
+                       <a href="dosing.html" class="feature-button">Set Reminders</a>
+                   </div>
+
+                   <div class="feature-card">
+                       <div class="feature-icon">📊</div>
+                       <h3 class="feature-title">Scan Your Report</h3>
+                       <p class="feature-description">Upload and analyze your medical reports with AI assistance</p>
+                       <a href="readreports.html" class="feature-button">Upload Report</a>
+                   </div>
+
+                   <div class="feature-card">
+                       <div class="feature-icon">🧪</div>
+                       <h3 class="feature-title">Chemistry Lab</h3>
+                       <p class="feature-description">Access lab results and chemical analysis tools</p>
+                       <a href="chem.html" class="feature-button">View Lab</a>
+                   </div>
+
+                
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- AI Chat Modal -->
+   <div class="ai-chat-modal" id="aiChatModal">
+       <div class="chat-modal-content">
+           <div class="chat-modal-header">
+               <h3>🤖 AI Health Assistant</h3>
+               <button class="close-chat" onclick="closeAIChat()">×</button>
+           </div>
+           <div class="chat-modal-messages" id="chatMessages">
+               <div class="message ai-message">
+                   🩺 AI DIAGNOSTIC ASSISTANT
+                  
+                   I'm your AI-powered healthcare assistant, ready to help analyze your symptoms and provide medical guidance!
+                  
+                   How I can help:
+                   • Symptom analysis and preliminary diagnosis
+                   • Health advice and recommendations
+                   • When to seek medical care
+                   • General health questions
+                  
+                   Simply describe your symptoms or ask any health-related question to get started.
+                  
+                   ⚠️ Important: This is for informational purposes only. For emergencies, call 911 immediately!
+               </div>
+           </div>
+           <div class="loading-indicator" id="loadingIndicator">
+               <div class="spinner"></div>
+               <span>AI is thinking...</span>
+           </div>
+           <div class="chat-input-area">
+               <input type="text" class="chat-input" id="chatInput" placeholder="Describe your symptoms or ask a health question...">
+               <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
+           </div>
+       </div>
+   </div>
+
+   <!-- Navigation -->
+   <div class="navigation">
+       <button class="nav-button" onclick="prevPage()" id="prevBtn" style="display: none;">← Previous</button>
+       <button class="nav-button" onclick="nextPage()" id="nextBtn">Next →</button>
+   </div>
+
+   <script>
+       // Configuration
+       const OPENAI_API_KEY = 'Enter_Api_Key';
+       const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+
+       let currentPage = 1;
+       let chatMessages = [];
+
+       // System prompt for the AI
+       const SYSTEM_PROMPT = `You are an experienced AI healthcare assistant. Your role is to:
+
+1. Provide preliminary medical guidance based on symptoms
+2. Offer helpful health advice and recommendations
+3. Identify when professional medical care is needed
+4. Answer general health questions accurately
+
+Guidelines:
+- Always emphasize that this is for informational purposes only
+- Recommend seeing a healthcare provider for proper diagnosis
+- For emergency symptoms (chest pain, difficulty breathing, severe bleeding, etc.), immediately advise calling 911
+- Be empathetic, professional, and thorough
+- Provide actionable advice when appropriate
+- Ask follow-up questions to better understand symptoms
+
+Remember: You are not replacing professional medical care, but providing helpful preliminary guidance.`;
+
+       function nextPage() {
+           if (currentPage < 2) {
+               document.getElementById('page' + currentPage).classList.remove('active');
+               currentPage++;
+               document.getElementById('page' + currentPage).classList.add('active');
+               updateNavigation();
+           }
+       }
+
+       function prevPage() {
+           if (currentPage > 1) {
+               document.getElementById('page' + currentPage).classList.remove('active');
+               currentPage--;
+               document.getElementById('page' + currentPage).classList.add('active');
+               updateNavigation();
+           }
+       }
+
+       function updateNavigation() {
+           const prevBtn = document.getElementById('prevBtn');
+           const nextBtn = document.getElementById('nextBtn');
+          
+           prevBtn.style.display = currentPage > 1 ? 'block' : 'none';
+           nextBtn.style.display = currentPage < 2 ? 'block' : 'none';
+       }
+
+       function openAIChat() {
+           document.getElementById('aiChatModal').classList.add('active');
+       }
+
+       function closeAIChat() {
+           document.getElementById('aiChatModal').classList.remove('active');
+       }
+
+       async function sendMessage() {
+           const input = document.getElementById('chatInput');
+           const sendButton = document.getElementById('sendButton');
+           const loadingIndicator = document.getElementById('loadingIndicator');
+           const message = input.value.trim();
+          
+           if (!message) return;
+
+           // Add user message
+           addMessage(message, 'user');
+           input.value = '';
+           
+           // Show loading state
+           sendButton.disabled = true;
+           loadingIndicator.classList.add('active');
+
+           try {
+               // Call OpenAI API
+               const response = await callOpenAI(message);
+               addMessage(response, 'ai');
+           } catch (error) {
+               console.error('Error calling OpenAI API:', error);
+               addMessage('I apologize, but I\'m having trouble connecting right now. Please try again in a moment. If this is a medical emergency, please call 911 immediately.', 'ai');
+           } finally {
+               // Hide loading state
+               sendButton.disabled = false;
+               loadingIndicator.classList.remove('active');
+           }
+       }
+
+       async function callOpenAI(userMessage) {
+           // Prepare conversation history
+           const messages = [
+               { role: 'system', content: SYSTEM_PROMPT },
+               ...chatMessages,
+               { role: 'user', content: userMessage }
+           ];
+
+           const response = await fetch(OPENAI_API_URL, {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json',
+                   'Authorization': `Bearer ${OPENAI_API_KEY}`
+               },
+               body: JSON.stringify({
+                   model: 'gpt-3.5-turbo',
+                   messages: messages,
+                   max_tokens: 500,
+                   temperature: 0.7,
+                   presence_penalty: 0.6,
+                   frequency_penalty: 0.5
+               })
+           });
+
+           if (!response.ok) {
+               throw new Error(`HTTP error! status: ${response.status}`);
+           }
+
+           const data = await response.json();
+           return data.choices[0].message.content;
+       }
+
+       function addMessage(text, sender) {
+           const messagesContainer = document.getElementById('chatMessages');
+           const messageDiv = document.createElement('div');
+           messageDiv.className = `message ${sender}-message`;
+           messageDiv.textContent = text;
+           messagesContainer.appendChild(messageDiv);
+           
+           // Store message in conversation history
+           chatMessages.push({
+               role: sender === 'user' ? 'user' : 'assistant',
+               content: text
+           });
+
+           // Keep only last 10 messages to avoid token limits
+           if (chatMessages.length > 10) {
+               chatMessages = chatMessages.slice(-10);
+           }
+
+           messagesContainer.scrollTop = messagesContainer.scrollHeight;
+       }
+
+       // Allow Enter key to send messages
+       document.getElementById('chatInput').addEventListener('keypress', function(e) {
+           if (e.key === 'Enter' && !document.getElementById('sendButton').disabled) {
+               sendMessage();
+           }
+       });
+
+       // Close modal when clicking outside
+       document.getElementById('aiChatModal').addEventListener('click', function(e) {
+           if (e.target === this) {
+               closeAIChat();
+           }
+       });
+   </script>
+</body>
+</html>

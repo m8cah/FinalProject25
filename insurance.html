@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #EFF5ED; /* Main background from screenshot */
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements - Keeping these but color might need slight adjustment */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1); /* Keep subtle white for effect */
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 70%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px; /* Adjusted max-width for better fit to screenshot layout */
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.8rem; /* Adjusted font size */
+            color: #333; /* Darker text for better contrast on light background */
+            margin-bottom: 10px;
+            font-weight: 700; /* Slightly lighter weight */
+            text-shadow: none; /* Removed text shadow */
+            position: relative;
+        }
+
+        .header h1::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px; /* Adjusted width */
+            height: 3px; /* Adjusted height */
+            background: #9E403C; /* Using the red accent color */
+            border-radius: 2px;
+        }
+
+        .header p {
+            font-size: 1.1rem; /* Adjusted font size */
+            color: #666; /* Softer text color */
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* AI Health Assistant Card */
+        .ai-health-assistant {
+            background-color: #9E403C; /* Reddish-brown from screenshot */
+            color: white;
+            border-radius: 15px; /* Softer border radius */
+            padding: 25px 30px; /* Adjusted padding */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px; /* Space below this card */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .ai-health-assistant:hover {
+            transform: translateY(-5px);
+        }
+
+        .ai-health-assistant .icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .ai-health-assistant .text-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .ai-health-assistant .text-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .ai-health-assistant .arrow-icon {
+            font-size: 1.8rem;
+            color: white;
+            margin-left: auto; /* Pushes the arrow to the right */
+        }
+
+
+        .ai-domains {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adjusted minmax for better responsiveness */
+            gap: 25px; /* Slightly smaller gap */
+            margin-bottom: 40px;
+        }
+
+        .domain-card {
+            background: #FFFFFF; /* Off-white from screenshot */
+            border-radius: 15px; /* Softer border radius */
+            padding: 30px; /* Adjusted padding */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08); /* Softer shadow */
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0; /* Subtle border */
+            backdrop-filter: none; /* Removed blur for simpler look */
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .domain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px; /* Thinner border */
+            background: linear-gradient(90deg, #9E403C, #F0A39E); /* Using red accent gradient */
+            border-radius: 15px 15px 0 0;
+        }
+
+        .domain-card:hover {
+            transform: translateY(-8px); /* Less dramatic lift */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12); /* Softer hover shadow */
+            border-color: #9E403C; /* Red accent on hover */
+        }
+
+        .domain-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px; /* Adjusted margin */
+            position: relative;
+        }
+
+        .domain-icon {
+            font-size: 2.5rem; /* Slightly smaller icon */
+            margin-right: 15px;
+            color: #9E403C; /* Using red accent color directly for icon */
+            -webkit-background-clip: unset; /* Remove clip */
+            -webkit-text-fill-color: unset; /* Remove fill */
+            background-clip: unset;
+            filter: none; /* Remove filter */
+        }
+
+        .domain-card h3 {
+            color: #333; /* Darker text */
+            font-size: 1.6rem; /* Adjusted font size */
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .domain-card p {
+            color: #555; /* Softer text */
+            margin-bottom: 25px; /* Adjusted margin */
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px; /* Adjusted margin */
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px; /* Adjusted margin */
+            font-weight: 600;
+            color: #444; /* Darker label color */
+            font-size: 0.95rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px; /* Adjusted padding */
+            border: 1px solid #ccc; /* Softer border */
+            border-radius: 8px; /* Softer border radius */
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #9E403C; /* Red accent on focus */
+            box-shadow: 0 0 0 3px rgba(158, 64, 60, 0.1); /* Softer shadow */
+            transform: none; /* Removed transform on focus */
+        }
+
+        .input-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); /* Darker arrow for contrast */
+            background-position: right 10px center;
+            background-repeat: no-repeat;
+            background-size: 14px; /* Slightly smaller arrow */
+            padding-right: 35px;
+        }
+
+        .btn {
+            background-color: #9E403C; /* Reddish-brown from screenshot */
+            color: white;
+            border: none;
+            padding: 14px 25px; /* Adjusted padding */
+            border-radius: 8px; /* Softer border radius */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px); /* Less dramatic lift on hover */
+            box-shadow: 0 8px 20px rgba(158, 64, 60, 0.2); /* Softer shadow */
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px; /* Adjusted padding */
+            margin-top: 15px;
+        }
+
+        .loading.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3; /* Thinner border */
+            border-top: 3px solid #9E403C; /* Red accent for spinner */
+            border-radius: 50%;
+            width: 40px; /* Smaller spinner */
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px; /* Adjusted margin */
+        }
+
+        .loading p {
+            color: #555;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .results {
+            margin-top: 25px; /* Adjusted margin */
+            padding: 25px; /* Adjusted padding */
+            background: #fdfdfd; /* Lighter background for results */
+            border-radius: 12px; /* Softer border radius */
+            border-left: 4px solid #9E403C; /* Red accent for left border */
+            display: none;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); /* Lighter shadow */
+        }
+
+        .results.show {
+            display: block;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .results h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .coverage-details {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+
+        .coverage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee; /* Lighter border */
+            font-size: 0.95rem;
+        }
+
+        .coverage-item:last-child {
+            border-bottom: none;
+        }
+
+        .coverage-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-covered {
+            background: #D4EDDA; /* Lighter green */
+            color: #155724; /* Darker green text */
+        }
+
+        .status-partial {
+            background: #FFF3CD; /* Lighter yellow */
+            color: #856404; /* Darker yellow text */
+        }
+
+        .status-not-covered {
+            background: #F8D7DA; /* Lighter red */
+            color: #721C24; /* Darker red text */
+        }
+
+        .equity-score {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+
+        .score-circle {
+            width: 70px; /* Smaller circle */
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #28a745, #218838); /* Green shades */
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #ffc107, #e0a800); /* Orange/Yellow shades */
+        }
+
+        .score-needs-improvement {
+            background: linear-gradient(135deg, #dc3545, #c82333); /* Red shades */
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+            margin-bottom: 18px;
+        }
+
+        .comparison-header {
+            background-color: #9E403C; /* Red accent for header */
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 10px; /* Smaller gap */
+            padding: 12px 18px; /* Adjusted padding */
+            border-bottom: 1px solid #eee; /* Lighter border */
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-row:nth-child(even) {
+            background: #fbfbfb; /* Slightly different stripe */
+        }
+
+        .provider-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .coverage-score {
+            text-align: center;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .score-high {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .score-medium {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .score-low {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .recommendation {
+            background-color: #9E403C; /* Red accent for recommendation */
+            color: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 18px;
+            font-size: 0.95rem;
+        }
+
+        .recommendation h5 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted minmax */
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+
+        .analytics-card h5 {
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .analytics-value {
+            font-size: 1.8rem; /* Slightly smaller */
+            font-weight: bold;
+            color: #9E403C; /* Red accent for values */
+        }
+
+        .service-breakdown {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .service-item:last-child {
+            border-bottom: none;
+        }
+
+        .service-bar {
+            width: 80px; /* Smaller bar */
+            height: 6px; /* Thinner bar */
+            background: #e9ecef; /* Lighter background for bar */
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .service-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #9E403C, #F0A39E); /* Red accent gradient */
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Keyframe animations - keeping them */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .ai-domains {
+                grid-template-columns: 1fr;
+            }
+            
+            .domain-card {
+                padding: 20px;
+            }
+            
+            .comparison-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .ai-health-assistant {
+                padding: 20px;
+            }
+
+            .ai-health-assistant .text-content h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏥 AI Insurance Coverage Checker</h1>
+            <p>Smart insurance analysis with AI-powered bias detection and equity insights</p>
+        </div>
+
+        <div class="ai-domains">
+            <div class="domain-card">
+                <div class="domain-header">
+                    <div class="domain-icon">🔍</div>
+                    <h3>Coverage Analysis</h3>
+                </div>
+                <p>Check your insurance coverage with AI-powered bias detection and comprehensive equity analysis.</p>
+                
+                <div class="input-group">
+                    <label for="insuranceProvider">Select Insurance Provider:</label>
+                    <select id="insuranceProvider">
+                        <option value="">Choose your insurance provider</option>
+                        <option value="aetna">Aetna</option>
+                        <option value="bcbs">Blue Cross Blue Shield</option>
+                        <option value="cigna">Cigna</option>
+                        <option value="united">UnitedHealthcare</option>
+                        <option value="humana">Humana</option>
+                        <option value="kaiser">Kaiser Permanente</option>
+                        <option value="elevance">Elevance Health (Anthem)</option>
+                        <option value="cvshealth">CVS Health (Aetna)</option>
+                        <option value="highmark">Highmark</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="serviceType">Service Type:</label>
+                    <select id="serviceType">
+                        <option value="general">General Medicine</option>
+                        <option value="telemedicine">Telemedicine</option>
+                        <option value="specialist">Specialist Care</option>
+                        <option value="mental_health">Mental Health</option>
+                        <option value="preventive">Preventive Care</option>
+                        <option value="emergency">Emergency Care</option>
+                        <option value="prescription">Prescription Drugs</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="memberId">Member ID:</label>
+                    <input type="text" id="memberId" placeholder="Enter your member ID">
+                </div>
+                
+                <button class="btn" onclick="checkCoverage()">Check Coverage</button>
+                
+                <div class="loading" id="coverageLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing coverage and detecting potential bias...</p>
+                </div>
+                
+                <div class="results" id="coverageResults">
+                    <h4>📊 Coverage Analysis Results</h4>
+                    <div class="coverage-details" id="coverageDetails"></div>
+                    <h4>⚖️ Equity Assessment</h4>
+                    <div class="equity-score" id="equityScore"></div>
+                </div>
+            </div>
+
+            <div class="domain-card">
+                <div class="domain-header">
+                    <div class="domain-icon">📈</div>
+                    <h3>Provider Comparison</h3>
+                </div>
+                <p>Compare insurance providers with bias-aware AI analysis for transparent, equitable recommendations.</p>
+                
+                <div class="input-group">
+                    <label for="compareServiceType">Service Type for Comparison:</label>
+                    <select id="compareServiceType">
+                        <option value="general">General Medicine</option>
+                        <option value="telemedicine">Telemedicine</option>
+                        <option value="specialist">Specialist Care</option>
+                        <option value="mental_health">Mental Health</option>
+                        <option value="preventive">Preventive Care</option>
+                        <option value="emergency">Emergency Care</option>
+                        <option value="prescription">Prescription Drugs</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="zipCode">ZIP Code (for local analysis):</label>
+                    <input type="text" id="zipCode" placeholder="Enter your ZIP code">
+                </div>
+                
+                <button class="btn" onclick="compareProviders()">Compare Providers</button>
+                
+                <div class="loading" id="comparisonLoading">
+                    <div class="spinner"></div>
+                    <p>Comparing providers and analyzing equity metrics...</p>
+                </div>
+                
+                <div class="results" id="comparisonResults">
+                    <h4>🏆 Provider Comparison Results</h4>
+                    <div class="comparison-table" id="comparisonTable"></div>
+                    <div class="recommendation" id="aiRecommendation"></div>
+                </div>
+            </div>
+
+            <div class="domain-card">
+                <div class="domain-header">
+                    <div class="domain-icon">📊</div>
+                    <h3>Analytics Dashboard</h3>
+                </div>
+                <p>View comprehensive analytics and insights about insurance coverage patterns and trends.</p>
+                
+                <div class="input-group">
+                    <label for="analyticsProvider">Provider for Analysis:</label>
+                    <select id="analyticsProvider">
+                        <option value="all">All Providers</option>
+                        <option value="aetna">Aetna</option>
+                        <option value="bcbs">Blue Cross Blue Shield</option>
+                        <option value="cigna">Cigna</option>
+                        <option value="united">UnitedHealthcare</option>
+                        <option value="humana">Humana</option>
+                        <option value="kaiser">Kaiser Permanente</option>
+                        <option value="elevance">Elevance Health (Anthem)</option>
+                        <option value="cvshealth">CVS Health (Aetna)</option>
+                        <option value="highmark">Highmark</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="analyticsRegion">Region:</label>
+                    <select id="analyticsRegion">
+                        <option value="national">National</option>
+                        <option value="west">West Coast</option>
+                        <option value="east">East Coast</option>
+                        <option value="midwest">Midwest</option>
+                        <option value="south">South</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="generateAnalytics()">Generate Analytics</button>
+                
+                <div class="loading" id="analyticsLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing coverage data and generating insights...</p>
+                </div>
+                
+                <div class="results" id="analyticsResults">
+                    <h4>📈 Coverage Analytics</h4>
+                    <div class="analytics-grid" id="analyticsData"></div>
+                    <h4>🎯 Service Breakdown</h4>
+                    <div class="service-breakdown" id="serviceBreakdown"></div>
+                    <h4>💡 Key Insights</h4>
+                    <div id="analyticsInsights"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive insurance data with real-world metrics
+        const insuranceData = {
+            aetna: { // Renamed this entry to 'aetna' as CVS Health is Aetna
+                general: { coverage: 85, copay: 25, deductible: 1500, network: 'Large', satisfaction: 4.2, outOfPocket: 6500 },
+                specialist: { coverage: 80, copay: 50, deductible: 1500, network: 'Medium', satisfaction: 4.1, outOfPocket: 6500 },
+                mental_health: { coverage: 88, copay: 30, deductible: 1500, network: 'Large', satisfaction: 4.3, outOfPocket: 6500 },
+                telemedicine: { coverage: 95, copay: 15, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 6500 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.4, outOfPocket: 6500 },
+                emergency: { coverage: 85, copay: 250, deductible: 1500, network: 'Large', satisfaction: 4.0, outOfPocket: 6500 },
+                prescription: { coverage: 75, copay: 15, deductible: 1500, network: 'Medium', satisfaction: 4.1, outOfPocket: 6500 }
+            },
+            bcbs: {
+                general: { coverage: 88, copay: 20, deductible: 1200, network: 'Excellent', satisfaction: 4.4, outOfPocket: 7000 },
+                specialist: { coverage: 85, copay: 45, deductible: 1200, network: 'Large', satisfaction: 4.2, outOfPocket: 7000 },
+                mental_health: { coverage: 90, copay: 25, deductible: 1200, network: 'Large', satisfaction: 4.3, outOfPocket: 7000 },
+                telemedicine: { coverage: 92, copay: 20, deductible: 0, network: 'Good', satisfaction: 4.1, outOfPocket: 7000 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 7000 },
+                emergency: { coverage: 90, copay: 200, deductible: 1200, network: 'Excellent', satisfaction: 4.3, outOfPocket: 7000 },
+                prescription: { coverage: 80, copay: 10, deductible: 1200, network: 'Large', satisfaction: 4.2, outOfPocket: 7000 }
+            },
+            cigna: {
+                general: { coverage: 78, copay: 30, deductible: 1800, network: 'Medium', satisfaction: 3.9, outOfPocket: 6000 },
+                specialist: { coverage: 75, copay: 55, deductible: 1800, network: 'Medium', satisfaction: 3.8, outOfPocket: 6000 },
+                mental_health: { coverage: 82, copay: 40, deductible: 1800, network: 'Medium', satisfaction: 4.0, outOfPocket: 6000 },
+                telemedicine: { coverage: 88, copay: 25, deductible: 0, network: 'Good', satisfaction: 4.2, outOfPocket: 6000 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Good', satisfaction: 4.3, outOfPocket: 6000 },
+                emergency: { coverage: 80, copay: 300, deductible: 1800, network: 'Medium', satisfaction: 3.7, outOfPocket: 6000 },
+                prescription: { coverage: 70, copay: 20, deductible: 1800, network: 'Medium', satisfaction: 3.8, outOfPocket: 6000 }
+            },
+            united: { // UnitedHealthcare
+                general: { coverage: 83, copay: 25, deductible: 1600, network: 'Large', satisfaction: 4.1, outOfPocket: 6800 },
+                specialist: { coverage: 80, copay: 50, deductible: 1600, network: 'Large', satisfaction: 4.0, outOfPocket: 6800 },
+                mental_health: { coverage: 85, copay: 35, deductible: 1600, network: 'Medium', satisfaction: 4.1, outOfPocket: 6800 },
+                telemedicine: { coverage: 90, copay: 20, deductible: 0, network: 'Good', satisfaction: 4.2, outOfPocket: 6800 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.4, outOfPocket: 6800 },
+                emergency: { coverage: 85, copay: 250, deductible: 1600, network: 'Large', satisfaction: 4.0, outOfPocket: 6800 },
+                prescription: { coverage: 78, copay: 15, deductible: 1600, network: 'Large', satisfaction: 4.0, outOfPocket: 6800 }
+            },
+            humana: {
+                general: { coverage: 79, copay: 35, deductible: 2000, network: 'Medium', satisfaction: 4.0, outOfPocket: 7500 },
+                specialist: { coverage: 76, copay: 60, deductible: 2000, network: 'Medium', satisfaction: 3.9, outOfPocket: 7500 },
+                mental_health: { coverage: 81, copay: 45, deductible: 2000, network: 'Medium', satisfaction: 4.0, outOfPocket: 7500 },
+                telemedicine: { coverage: 85, copay: 30, deductible: 0, network: 'Good', satisfaction: 4.1, outOfPocket: 7500 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Good', satisfaction: 4.2, outOfPocket: 7500 },
+                emergency: { coverage: 78, copay: 350, deductible: 2000, network: 'Medium', satisfaction: 3.8, outOfPocket: 7500 },
+                prescription: { coverage: 72, copay: 25, deductible: 2000, network: 'Medium', satisfaction: 3.9, outOfPocket: 7500 }
+            },
+            kaiser: {
+                general: { coverage: 92, copay: 20, deductible: 1000, network: 'Integrated', satisfaction: 4.6, outOfPocket: 5000 },
+                specialist: { coverage: 90, copay: 35, deductible: 1000, network: 'Integrated', satisfaction: 4.5, outOfPocket: 5000 },
+                mental_health: { coverage: 95, copay: 20, deductible: 1000, network: 'Integrated', satisfaction: 4.7, outOfPocket: 5000 },
+                telemedicine: { coverage: 98, copay: 10, deductible: 0, network: 'Integrated', satisfaction: 4.8, outOfPocket: 5000 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Integrated', satisfaction: 4.7, outOfPocket: 5000 },
+                emergency: { coverage: 92, copay: 150, deductible: 1000, network: 'Integrated', satisfaction: 4.4, outOfPocket: 5000 },
+                prescription: { coverage: 85, copay: 10, deductible: 1000, network: 'Integrated', satisfaction: 4.6, outOfPocket: 5000 }
+            },
+            elevance: { // Elevance Health (formerly Anthem)
+                general: { coverage: 87, copay: 25, deductible: 1400, network: 'Large', satisfaction: 4.3, outOfPocket: 6700 },
+                specialist: { coverage: 82, copay: 45, deductible: 1400, network: 'Large', satisfaction: 4.2, outOfPocket: 6700 },
+                mental_health: { coverage: 89, copay: 30, deductible: 1400, network: 'Large', satisfaction: 4.4, outOfPocket: 6700 },
+                telemedicine: { coverage: 94, copay: 15, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 6700 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 6700 },
+                emergency: { coverage: 88, copay: 200, deductible: 1400, network: 'Large', satisfaction: 4.1, outOfPocket: 6700 },
+                prescription: { coverage: 77, copay: 15, deductible: 1400, network: 'Medium', satisfaction: 4.1, outOfPocket: 6700 }
+            },
+            cvshealth: { // CVS Health (Aetna) - Duplicates some Aetna data but added for explicit listing
+                general: { coverage: 84, copay: 25, deductible: 1550, network: 'Large', satisfaction: 4.2, outOfPocket: 6600 },
+                specialist: { coverage: 79, copay: 50, deductible: 1550, network: 'Medium', satisfaction: 4.1, outOfPocket: 6600 },
+                mental_health: { coverage: 87, copay: 30, deductible: 1550, network: 'Large', satisfaction: 4.3, outOfPocket: 6600 },
+                telemedicine: { coverage: 96, copay: 10, deductible: 0, network: 'Excellent', satisfaction: 4.6, outOfPocket: 6600 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 6600 },
+                emergency: { coverage: 86, copay: 240, deductible: 1550, network: 'Large', satisfaction: 4.0, outOfPocket: 6600 },
+                prescription: { coverage: 76, copay: 12, deductible: 1550, network: 'Excellent', satisfaction: 4.2, outOfPocket: 6600 } // Stronger prescription due to CVS Caremark
+            },
+            highmark: {
+                general: { coverage: 86, copay: 22, deductible: 1300, network: 'Regional', satisfaction: 4.3, outOfPocket: 6800 },
+                specialist: { coverage: 83, copay: 40, deductible: 1300, network: 'Regional', satisfaction: 4.2, outOfPocket: 6800 },
+                mental_health: { coverage: 91, copay: 28, deductible: 1300, network: 'Regional', satisfaction: 4.4, outOfPocket: 6800 },
+                telemedicine: { coverage: 93, copay: 18, deductible: 0, network: 'Good', satisfaction: 4.3, outOfPocket: 6800 },
+                preventive: { coverage: 100, copay: 0, deductible: 0, network: 'Excellent', satisfaction: 4.5, outOfPocket: 6800 },
+                emergency: { coverage: 89, copay: 220, deductible: 1300, network: 'Regional', satisfaction: 4.2, outOfPocket: 6800 },
+                prescription: { coverage: 81, copay: 14, deductible: 1300, network: 'Regional', satisfaction: 4.2, outOfPocket: 6800 }
+            }
+        };
+
+        // Function to simulate AI analysis with a delay
+        function simulateAIAnalysis(callback, delay = 2000) {
+            setTimeout(callback, delay);
+        }
+
+
+
+        // --- Provider Comparison ---
+        function compareProviders() {
+            const serviceType = document.getElementById('compareServiceType').value;
+            const zipCode = document.getElementById('zipCode').value;
+            const loadingDiv = document.getElementById('comparisonLoading');
+            const resultsDiv = document.getElementById('comparisonResults');
+            const tableDiv = document.getElementById('comparisonTable');
+            const recommendationDiv = document.getElementById('aiRecommendation');
+
+            // Clear previous results
+            resultsDiv.classList.remove('show');
+            tableDiv.innerHTML = '';
+            recommendationDiv.innerHTML = '';
+
+            if (!serviceType || !zipCode) {
+                alert('Please select a service type and enter your ZIP code for comparison.');
+                return;
+            }
+
+            loadingDiv.classList.add('show');
+
+            simulateAIAnalysis(() => {
+                loadingDiv.classList.remove('show');
+                resultsDiv.classList.add('show');
+
+                let providersComparison = [];
+                for (const providerKey in insuranceData) {
+                    if (insuranceData.hasOwnProperty(providerKey)) {
+                        const providerInfo = insuranceData[providerKey][serviceType];
+                        if (providerInfo) {
+                            // Simulate local network strength and equity based on ZIP (simplified)
+                            const localNetworkFactor = Math.random() * 0.2 + 0.8; // 0.8 to 1.0
+                            const equityBiasFactor = Math.random() * 0.1; // 0 to 0.1
+                            
+                            const adjustedCoverage = Math.min(100, Math.round(providerInfo.coverage * localNetworkFactor));
+                            const equityScore = Math.floor(Math.random() * 20) + 70 - Math.round(equityBiasFactor * 100); // 50-90 range, with some random bias
+                            const overallScore = Math.round((adjustedCoverage * 0.6) + (equityScore * 0.4)); // Weighted score
+
+                            providersComparison.push({
+                                name: providerKey.charAt(0).toUpperCase() + providerKey.slice(1),
+                                coverage: adjustedCoverage,
+                                copay: providerInfo.copay,
+                                deductible: providerInfo.deductible,
+                                equityScore: equityScore,
+                                overallScore: overallScore
+                            });
+                        }
+                    }
+                }
+
+                providersComparison.sort((a, b) => b.overallScore - a.overallScore);
+
+                let tableHtml = `
+                    <div class="comparison-row comparison-header">
+                        <div>Provider</div>
+                        <div>Coverage (%)</div>
+                        <div>Co-pay ($)</div>
+                        <div>Deductible ($)</div>
+                        <div>Equity Score</div>
+                        <div>Overall Score</div>
+                    </div>
+                `;
+                providersComparison.forEach(p => {
+                    let coverageScoreClass;
+                    if (p.coverage >= 90) coverageScoreClass = 'score-high';
+                    else if (p.coverage >= 70) coverageScoreClass = 'score-medium';
+                    else coverageScoreClass = 'score-low';
+
+                    let equityScoreClass;
+                    if (p.equityScore >= 85) equityScoreClass = 'score-high';
+                    else if (p.equityScore >= 70) equityScoreClass = 'score-medium';
+                    else equityScoreClass = 'score-low';
+
+                    let overallScoreClass;
+                    if (p.overallScore >= 85) overallScoreClass = 'score-high';
+                    else if (p.overallScore >= 70) overallScoreClass = 'score-medium';
+                    else overallScoreClass = 'score-low';
+
+                    tableHtml += `
+                        <div class="comparison-row">
+                            <div class="provider-name">${p.name === 'Aetna' ? 'Aetna (Original)' : p.name === 'Cvshealth' ? 'CVS Health (Aetna)' : p.name === 'Elevance' ? 'Elevance Health (Anthem)' : p.name}</div>
+                            <div class="coverage-score ${coverageScoreClass}">${p.coverage}</div>
+                            <div>${p.copay}</div>
+                            <div>${p.deductible}</div>
+                            <div class="coverage-score ${equityScoreClass}">${p.equityScore}</div>
+                            <div class="coverage-score ${overallScoreClass}">${p.overallScore}</div>
+                        </div>
+                    `;
+                });
+                tableDiv.innerHTML = tableHtml;
+
+                const bestProvider = providersComparison[0];
+                let bestProviderDisplayName = bestProvider.name === 'Aetna' ? 'Aetna (Original)' : bestProvider.name === 'Cvshealth' ? 'CVS Health (Aetna)' : bestProvider.name === 'Elevance' ? 'Elevance Health (Anthem)' : bestProvider.name;
+
+                recommendationDiv.innerHTML = `
+                    <h5>AI Recommendation:</h5>
+                    <p>Based on comprehensive analysis for ${serviceType.replace(/_/g, ' ').toLowerCase()} in your area, <strong>${bestProviderDisplayName}</strong> is recommended. They offer strong coverage, reasonable costs, and a high equity score, indicating fair and unbiased services.</p>
+                `;
+            });
+        }
+
+        // --- Analytics Dashboard ---
+        function generateAnalytics() {
+            const provider = document.getElementById('analyticsProvider').value;
+            const region = document.getElementById('analyticsRegion').value;
+            const loadingDiv = document.getElementById('analyticsLoading');
+            const resultsDiv = document.getElementById('analyticsResults');
+            const analyticsDataDiv = document.getElementById('analyticsData');
+            const serviceBreakdownDiv = document.getElementById('serviceBreakdown');
+            const insightsDiv = document.getElementById('analyticsInsights');
+
+            // Clear previous results
+            resultsDiv.classList.remove('show');
+            analyticsDataDiv.innerHTML = '';
+            serviceBreakdownDiv.innerHTML = '';
+            insightsDiv.innerHTML = '';
+
+            loadingDiv.classList.add('show');
+
+            simulateAIAnalysis(() => {
+                loadingDiv.classList.remove('show');
+                resultsDiv.classList.add('show');
+
+                let totalPolicies = 0;
+                let totalCoveredServices = 0;
+                let totalBiasIncidents = 0;
+                let totalEquityScore = 0;
+                let numProvidersAnalyzed = 0;
+                let serviceCoverage = {};
+
+                const providersToAnalyze = provider === 'all' ? Object.keys(insuranceData) : [provider];
+
+                providersToAnalyze.forEach(pKey => {
+                    const pData = insuranceData[pKey];
+                    if (pData) {
+                        numProvidersAnalyzed++;
+                        for (const sType in pData) {
+                            if (pData.hasOwnProperty(sType)) {
+                                totalPolicies++;
+                                const coverage = pData[sType].coverage;
+                                const equity = Math.floor(Math.random() * 40) + 60; // Simulate equity score for analytics
+
+                                if (coverage >= 80) totalCoveredServices++;
+                                if (Math.random() < 0.15) totalBiasIncidents++; // Simulate bias incidents
+                                totalEquityScore += equity;
+
+                                if (!serviceCoverage[sType]) {
+                                    serviceCoverage[sType] = { total: 0, count: 0 };
+                                }
+                                serviceCoverage[sType].total += coverage;
+                                serviceCoverage[sType].count++;
+                            }
+                        }
+                    }
+                });
+
+                const avgCoverageRate = totalPolicies > 0 ? (totalCoveredServices / totalPolicies * 100).toFixed(1) : 0;
+                const avgEquityScore = numProvidersAnalyzed > 0 ? (totalEquityScore / (numProvidersAnalyzed * 7)).toFixed(1) : 0; // 7 services per provider
+                const biasIncidentsRate = totalPolicies > 0 ? (totalBiasIncidents / totalPolicies * 100).toFixed(1) : 0;
+
+                analyticsDataDiv.innerHTML = `
+                    <div class="analytics-card">
+                        <h5>Average Coverage Rate</h5>
+                        <div class="analytics-value">${avgCoverageRate}%</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Average Equity Score</h5>
+                        <div class="analytics-value">${avgEquityScore}</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Bias Incidents Rate</h5>
+                        <div class="analytics-value">${biasIncidentsRate}%</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Total Policies Analyzed</h5>
+                        <div class="analytics-value">${totalPolicies}</div>
+                    </div>
+                `;
+
+                let serviceBreakdownHtml = '';
+                for (const sType in serviceCoverage) {
+                    if (serviceCoverage.hasOwnProperty(sType)) {
+                        const avgSvcCoverage = (serviceCoverage[sType].total / serviceCoverage[sType].count).toFixed(1);
+                        serviceBreakdownHtml += `
+                            <div class="service-item">
+                                <span>${sType.replace(/_/g, ' ').toUpperCase()}:</span>
+                                <div style="display: flex; align-items: center;">
+                                    <strong>${avgSvcCoverage}%</strong>
+                                    <div class="service-bar">
+                                        <div class="service-progress" style="width: ${avgSvcCoverage}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                serviceBreakdownDiv.innerHTML = serviceBreakdownHtml;
+
+                let insights = `<p><strong>Regional Trend for ${region}:</strong> Generally, ${region} shows a strong emphasis on preventive care coverage, with telemedicine rapidly expanding post-2020. However, specialist care coverage still varies significantly by provider.</p>`;
+                if (biasIncidentsRate > 5) {
+                    insights += `<p><strong>Actionable Insight:</strong> The higher-than-average bias incident rate suggests a need for deeper scrutiny into policy language and claim processing for potential systemic biases. Consider advocating for more transparent and equitable policy designs.</p>`;
+                } else {
+                    insights += `<p><strong>Actionable Insight:</strong> The low bias incident rate indicates robust efforts towards equitable coverage. Continue monitoring and upholding these standards.</p>`;
+                }
+                insightsDiv.innerHTML = insights;
+            });
+        }
+    </script>
+</body>
+</html>

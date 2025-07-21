@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Dashboard</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter for a modern look */
+            background: #F5F8F5; /* Light green/off-white background from screenshot */
+            min-height: 100vh;
+            color: #333;
+            display: flex; /* Use flexbox for centering content */
+            justify-content: center;
+            align-items: flex-start; /* Align to the top, not center vertically */
+            padding: 20px; /* Add some padding around the container */
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%; /* Ensure container takes full width on smaller screens */
+            margin: 0 auto;
+            padding: 0; /* Remove padding here as body already has it */
+        }
+
+        /* Header Section */
+        .header {
+            background: none; /* No background for the header itself, just for the overall body */
+            padding: 30px 0; /* Adjust padding */
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: none; /* No shadow on the header itself */
+        }
+
+        .header h1 {
+            color: #333; /* Darker text color */
+            font-size: 2.8em; /* Slightly larger font size */
+            margin-bottom: 10px;
+            background: none; /* Remove gradient text */
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: unset;
+            background-clip: unset;
+            font-weight: 700; /* Make it bolder */
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        /* Warning Banner */
+        .warning {
+            background: #ffe0b2; /* A softer, less aggressive warning color */
+            border: 1px solid #ffcc80;
+            color: #795548; /* Darker, more muted text for warning */
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+
+        .warning::before {
+            content: "⚠️";
+            font-size: 1.2em;
+        }
+
+        /* Tabs Section */
+        .tabs {
+            display: flex;
+            background: #FFFFFF; /* White background for tabs */
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow for tabs */
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .tab.active {
+            background: #A04040; /* Reddish-brown accent color */
+            color: white;
+            box-shadow: 0 4px 15px rgba(160, 64, 64, 0.3); /* Shadow matching accent color */
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: #FFFFFF; /* White background for content */
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Stronger shadow for main content */
+            backdrop-filter: blur(0); /* Remove backdrop filter if not needed */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Search Container */
+        .search-container {
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #FFFFFF; /* White background for search box */
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #A04040; /* Reddish-brown border on focus */
+            box-shadow: 0 0 20px rgba(160, 64, 64, 0.2); /* Reddish-brown shadow on focus */
+        }
+
+        /* Drug Card */
+        .drug-card {
+            background: #FFFFFF; /* White background for drug cards */
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            border-left: 5px solid #A04040; /* Reddish-brown left border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .drug-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12); /* Enhanced shadow on hover */
+        }
+
+        .drug-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .chemical-formula {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            background: #fdfdfd; /* Very light background for pros/cons */
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .pros h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .cons h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .home-remedy {
+            background: #e8f5e9; /* A very light green for home remedy, softer than original */
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid #c8e6c9; /* Softer border */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+
+        /* Chatbot Container */
+        .chatbot-container {
+            background: #FFFFFF; /* White background for chatbot */
+            border-radius: 20px;
+            padding: 20px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Stronger shadow for main content */
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-message {
+            background: #A04040; /* Reddish-brown for user messages */
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: #e3f2fd;
+            color: #1976d2;
+            margin-right: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            padding: 15px 25px;
+            background: #A04040; /* Reddish-brown for send button */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(160, 64, 64, 0.4); /* Shadow matching accent color */
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #FFFFFF; /* White background for table */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #A04040; /* Reddish-brown for table headers */
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Category Header */
+        .category-header {
+            background: #A04040; /* Reddish-brown for category headers */
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+
+        /* Filter Buttons */
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #A04040; /* Reddish-brown border */
+            border-radius: 25px;
+            background: transparent;
+            color: #A04040; /* Reddish-brown text */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #A04040; /* Reddish-brown active state */
+            color: white;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(160, 64, 64, 0.3); /* Shadow matching accent color */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Healthcare Dashboard</h1>
+            <p>Access all your health tools and AI assistance in one place</p>
+        </div>
+
+        <div class="warning">
+            This information is for educational purposes only. Always consult with healthcare professionals before making medical decisions.
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('database')">Drug Database</div>
+            <div class="tab" onclick="showTab('comparison')">Remedies Comparison</div>
+            <div class="tab" onclick="showTab('chatbot')">Drug Lookup Chatbot</div>
+        </div>
+
+        <div id="database" class="tab-content active">
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search from 100+ drugs (e.g., aspirin, metformin, amoxicillin...)" id="drugSearch">
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterByCategory('all')">All Drugs</button>
+                <button class="filter-btn" onclick="filterByCategory('pain')">Pain Relief</button>
+                <button class="filter-btn" onclick="filterByCategory('heart')">Heart/Blood</button>
+                <button class="filter-btn" onclick="filterByCategory('diabetes')">Diabetes</button>
+                <button class="filter-btn" onclick="filterByCategory('antibiotic')">Antibiotics</button>
+                <button class="filter-btn" onclick="filterByCategory('mental')">Mental Health</button>
+                <button class="filter-btn" onclick="filterByCategory('stomach')">Stomach/GI</button>
+                <button class="filter-btn" onclick="filterByCategory('respiratory')">Respiratory</button>
+            </div>
+            
+            <div id="drugResults">
+                <div class="category-header">Pain Relief & Anti-inflammatory</div>
+                
+                <div class="drug-card" data-category="pain">
+                    <div class="drug-name">Aspirin (Acetylsalicylic Acid)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₉H₈O₄<br>
+                        <strong>Molecular Weight:</strong> 180.16 g/mol<br>
+                        <strong>Structure:</strong> Salicylate derivative with acetyl group
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Effective pain relief</li>
+                                <li>Anti-inflammatory properties</li>
+                                <li>Reduces fever</li>
+                                <li>Cardiovascular protection</li>
+                                <li>Widely available and affordable</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Stomach irritation</li>
+                                <li>Bleeding risk</li>
+                                <li>Not suitable for children</li>
+                                <li>Drug interactions</li>
+                                <li>Allergic reactions possible</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Willow Bark</h4>
+                        <p>Contains salicin, which converts to salicylic acid in the body. Used traditionally for pain and inflammation. Less potent than aspirin but gentler on the stomach.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="pain">
+                    <div class="drug-name">Ibuprofen (Advil, Motrin)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₃H₁₈O₂<br>
+                        <strong>Molecular Weight:</strong> 206.28 g/mol<br>
+                        <strong>Structure:</strong> Propionic acid derivative (NSAID)
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Strong anti-inflammatory</li>
+                                <li>Effective pain relief</li>
+                                <li>Fever reduction</li>
+                                <li>Less stomach irritation than aspirin</li>
+                                <li>Available over-the-counter</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Kidney damage risk</li>
+                                <li>Cardiovascular risks</li>
+                                <li>GI side effects</li>
+                                <li>Not suitable during pregnancy</li>
+                                <li>Drug interactions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Turmeric</h4>
+                        <p>Contains curcumin, a powerful anti-inflammatory compound. Studies show it can be as effective as ibuprofen for some types of pain without the side effects.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="pain">
+                    <div class="drug-name">Acetaminophen (Tylenol)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₈H₉NO₂<br>
+                        <strong>Molecular Weight:</strong> 151.16 g/mol<br>
+                        <strong>Structure:</strong> Para-aminophenol derivative
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Effective pain relief</li>
+                                <li>Fever reduction</li>
+                                <li>Gentle on stomach</li>
+                                <li>Safe for children</li>
+                                <li>No blood thinning effects</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Liver damage risk</li>
+                                <li>No anti-inflammatory effects</li>
+                                <li>Easy to overdose</li>
+                                <li>Interactions with alcohol</li>
+                                <li>Hidden in many medications</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Ginger</h4>
+                        <p>Contains gingerols and shogaols with pain-relieving properties. Particularly effective for headaches and muscle pain. Also helps with nausea.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="pain">
+                    <div class="drug-name">Naproxen (Aleve)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₄H₁₄O₃<br>
+                        <strong>Molecular Weight:</strong> 230.26 g/mol<br>
+                        <strong>Structure:</strong> Propionic acid derivative
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Long-lasting pain relief</li>
+                                <li>Strong anti-inflammatory</li>
+                                <li>Effective for chronic pain</li>
+                                <li>Fewer doses needed</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Cardiovascular risks</li>
+                                <li>Stomach irritation</li>
+                                <li>Kidney problems</li>
+                                <li>Slower onset of action</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Boswellia</h4>
+                        <p>Also known as Indian frankincense, contains boswellic acids that reduce inflammation. Particularly effective for arthritis and chronic pain conditions.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="pain">
+                    <div class="drug-name">Tramadol</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₆H₂₅NO₂<br>
+                        <strong>Molecular Weight:</strong> 263.38 g/mol<br>
+                        <strong>Structure:</strong> Synthetic opioid analgesic
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Effective for moderate pain</li>
+                                <li>Lower abuse potential than other opioids</li>
+                                <li>Dual mechanism of action</li>
+                                <li>Available in extended-release forms</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Nausea and vomiting</li>
+                                <li>Dizziness and drowsiness</li>
+                                <li>Constipation</li>
+                                <li>Seizure risk</li>
+                                <li>Dependence potential</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Kratom</h4>
+                        <p>Contains mitragynine and 7-hydroxymitragynine with pain-relieving properties. However, use with caution as it can be habit-forming and legal status varies.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Heart & Blood Pressure</div>
+
+                <div class="drug-card" data-category="heart">
+                    <div class="drug-name">Lisinopril (Zestril)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₂₁H₃₁N₃O₅<br>
+                        <strong>Molecular Weight:</strong> 405.5 g/mol<br>
+                        <strong>Structure:</strong> ACE inhibitor
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Lowers blood pressure</li>
+                                <li>Protects heart and kidneys</li>
+                                <li>Reduces stroke risk</li>
+                                <li>Once-daily dosing</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Dry cough</li>
+                                <li>Hyperkalemia</li>
+                                <li>Angioedema (rare)</li>
+                                <li>Kidney problems</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Hawthorn</h4>
+                        <p>Contains oligomeric procyanidins that support heart health and may help lower blood pressure. Often combined with garlic and CoQ10 for cardiovascular support.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="heart">
+                    <div class="drug-name">Metoprolol (Lopressor)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₅H₂₅NO₃<br>
+                        <strong>Molecular Weight:</strong> 267.36 g/mol<br>
+                        <strong>Structure:</strong> Beta-blocker
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Reduces heart rate</li>
+                                <li>Lowers blood pressure</li>
+                                <li>Prevents heart attacks</li>
+                                <li>Reduces anxiety symptoms</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Fatigue and dizziness</li>
+                                <li>Cold hands and feet</li>
+                                <li>Depression</li>
+                                <li>Bronchospasm</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Magnesium</h4>
+                        <p>Magnesium glycinate helps relax blood vessels and can lower blood pressure. Also supports heart rhythm and reduces stress-related heart palpitations.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="heart">
+                    <div class="drug-name">Simvastatin (Zocor)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₂₅H₃₈O₅<br>
+                        <strong>Molecular Weight:</strong> 418.57 g/mol<br>
+                        <strong>Structure:</strong> HMG-CoA reductase inhibitor
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Lowers cholesterol</li>
+                                <li>Reduces heart disease risk</li>
+                                <li>Prevents strokes</li>
+                                <li>Well-studied efficacy</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Muscle pain</li>
+                                <li>Liver problems</li>
+                                <li>Memory issues</li>
+                                <li>Diabetes risk</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Red Yeast Rice</h4>
+                        <p>Contains naturally occurring statins (monacolin K). Combined with CoQ10 and omega-3 fatty acids, it can help lower cholesterol naturally.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="heart">
+                    <div class="drug-name">Warfarin (Coumadin)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₉H₁₆O₄<br>
+                        <strong>Molecular Weight:</strong> 308.33 g/mol<br>
+                        <strong>Structure:</strong> Vitamin K antagonist
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Prevents blood clots</li>
+                                <li>Reduces stroke risk</li>
+                                <li>Treats atrial fibrillation</li>
+                                <li>Well-established use</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Bleeding risk</li>
+                                <li>Requires regular monitoring</li>
+                                <li>Food interactions</li>
+                                <li>Drug interactions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Ginkgo Biloba</h4>
+                        <p>Improves circulation and has mild blood-thinning properties. Should be used with caution and medical supervision, especially with other blood thinners.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Diabetes Management</div>
+
+                <div class="drug-card" data-category="diabetes">
+                    <div class="drug-name">Metformin (Glucophage)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₄H₁₁N₅<br>
+                        <strong>Molecular Weight:</strong> 129.16 g/mol<br>
+                        <strong>Structure:</strong> Biguanide
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Lowers blood glucose</li>
+                                <li>Weight loss friendly</li>
+                                <li>Cardiovascular benefits</li>
+                                <li>First-line diabetes treatment</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Nausea and diarrhea</li>
+                                <li>Lactic acidosis (rare)</li>
+                                <li>Vitamin B12 deficiency</li>
+                                <li>Metallic taste</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Berberine</h4>
+                        <p>Alkaloid found in goldenseal and barberry. Studies show it can lower blood sugar as effectively as metformin by improving insulin sensitivity.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="diabetes">
+                    <div class="drug-name">Glipizide (Glucotrol)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₂₁H₂₇N₅O₄S<br>
+                        <strong>Molecular Weight:</strong> 445.54 g/mol<br>
+                        <strong>Structure:</strong> Sulfonylurea
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Stimulates insulin release</li>
+                                <li>Rapid glucose reduction</li>
+                                <li>Inexpensive</li>
+                                <li>Once or twice daily dosing</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Hypoglycemia risk</li>
+                                <li>Weight gain</li>
+                                <li>Pancreatic exhaustion</li>
+                                <li>Skin reactions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Cinnamon</h4>
+                        <p>Ceylon cinnamon contains compounds that improve insulin sensitivity and glucose metabolism.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Antibiotics</div>
+
+                <div class="drug-card" data-category="antibiotic">
+                    <div class="drug-name">Amoxicillin</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₆H₁₉N₃O₅S<br>
+                        <strong>Molecular Weight:</strong> 365.4 g/mol<br>
+                        <strong>Structure:</strong> Penicillin-class antibiotic
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Broad-spectrum antibiotic</li>
+                                <li>Treats many bacterial infections</li>
+                                <li>Generally well-tolerated</li>
+                                <li>Safe for children</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Allergic reactions (rash, anaphylaxis)</li>
+                                <li>Diarrhea</li>
+                                <li>Nausea and vomiting</li>
+                                <li>Antibiotic resistance development</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Garlic</h4>
+                        <p>Contains allicin, which has natural antimicrobial properties. Can be used as a supportive measure for mild infections, but not a replacement for prescribed antibiotics.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="antibiotic">
+                    <div class="drug-name">Azithromycin (Zithromax)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₃₈H₇₂N₂O₁₂<br>
+                        <strong>Molecular Weight:</strong> 748.98 g/mol<br>
+                        <strong>Structure:</strong> Macrolide antibiotic
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Effective for respiratory infections</li>
+                                <li>Short course of treatment</li>
+                                <li>Good tissue penetration</li>
+                                <li>Used for atypical bacteria</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>GI upset</li>
+                                <li>QT prolongation (heart rhythm)</li>
+                                <li>Liver problems</li>
+                                <li>Drug interactions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Echinacea</h4>
+                        <p>Boosts immune system and has some antiviral/antibacterial properties. Can help with common colds and flu, but not a substitute for antibiotics in serious infections.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Mental Health</div>
+
+                <div class="drug-card" data-category="mental">
+                    <div class="drug-name">Sertraline (Zoloft)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₇H₁₇Cl₂N<br>
+                        <strong>Molecular Weight:</strong> 306.23 g/mol<br>
+                        <strong>Structure:</strong> Selective Serotonin Reuptake Inhibitor (SSRI)
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Treats depression and anxiety</li>
+                                <li>Effective for OCD and PTSD</li>
+                                <li>Generally well-tolerated</li>
+                                <li>Less sedating than older antidepressants</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Nausea, diarrhea, insomnia</li>
+                                <li>Sexual dysfunction</li>
+                                <li>Weight changes</li>
+                                <li>Withdrawal symptoms</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: St. John's Wort</h4>
+                        <p>Used for mild to moderate depression. Interacts with many medications, so consult a doctor before use. Not for severe depression.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="mental">
+                    <div class="drug-name">Alprazolam (Xanax)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₇H₁₃ClN₄<br>
+                        <strong>Molecular Weight:</strong> 308.76 g/mol<br>
+                        <strong>Structure:</strong> Benzodiazepine
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Rapid anxiety relief</li>
+                                <li>Effective for panic attacks</li>
+                                <li>Short-term use for acute anxiety</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Sedation, dizziness</li>
+                                <li>Dependence and withdrawal</li>
+                                <li>Memory impairment</li>
+                                <li>Abuse potential</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Valerian Root</h4>
+                        <p>Promotes relaxation and sleep. Can help with mild anxiety and insomnia. Non-addictive alternative.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Stomach & GI</div>
+
+                <div class="drug-card" data-category="stomach">
+                    <div class="drug-name">Omeprazole (Prilosec)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₇H₁₉N₃O₃S<br>
+                        <strong>Molecular Weight:</strong> 345.42 g/mol<br>
+                        <strong>Structure:</strong> Proton Pump Inhibitor (PPI)
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Reduces stomach acid</li>
+                                <li>Treats GERD and ulcers</li>
+                                <li>Long-lasting effect</li>
+                                <li>Available over-the-counter</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Headache, nausea, diarrhea</li>
+                                <li>Increased risk of infections</li>
+                                <li>Bone fractures with long-term use</li>
+                                <li>Vitamin B12 deficiency</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Apple Cider Vinegar</h4>
+                        <p>Can help balance stomach pH for some, but use with caution. Also, slippery elm and marshmallow root can soothe the digestive tract.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="stomach">
+                    <div class="drug-name">Loperamide (Imodium)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₂₉H₃₃ClN₂O₂<br>
+                        <strong>Molecular Weight:</strong> 476.04 g/mol<br>
+                        <strong>Structure:</strong> Opioid-receptor agonist
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Effective for diarrhea</li>
+                                <li>Slows bowel movements</li>
+                                <li>Available over-the-counter</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Constipation</li>
+                                <li>Abdominal cramps</li>
+                                <li>Dizziness</li>
+                                <li>Serious heart problems with high doses</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: BRAT Diet & Ginger Tea</h4>
+                        <p>Bananas, rice, applesauce, and toast can help firm stools. Ginger tea can soothe an upset stomach and reduce nausea.</p>
+                    </div>
+                </div>
+
+                <div class="category-header">Respiratory</div>
+
+                <div class="drug-card" data-category="respiratory">
+                    <div class="drug-name">Albuterol (Ventolin)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₁₃H₂₁NO₃<br>
+                        <strong>Molecular Weight:</strong> 239.31 g/mol<br>
+                        <strong>Structure:</strong> Short-acting beta-agonist (SABA)
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Rapid relief for asthma attacks</li>
+                                <li>Opens airways quickly</li>
+                                <li>Used for exercise-induced bronchospasm</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Tremor, nervousness</li>
+                                <li>Increased heart rate</li>
+                                <li>Headache</li>
+                                <li>Tolerance with overuse</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Eucalyptus Oil (in steam)</h4>
+                        <p>Can help clear nasal passages and ease breathing when inhaled with steam. Not a substitute for asthma medication.</p>
+                    </div>
+                </div>
+
+                <div class="drug-card" data-category="respiratory">
+                    <div class="drug-name">Fluticasone (Flonase)</div>
+                    <div class="chemical-formula">
+                        <strong>Chemical Formula:</strong> C₂₂H₂₉F₃O₅S<br>
+                        <strong>Molecular Weight:</strong> 444.53 g/mol<br>
+                        <strong>Structure:</strong> Corticosteroid
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>✅ Benefits</h4>
+                            <ul>
+                                <li>Reduces nasal inflammation</li>
+                                <li>Treats allergies and sinusitis</li>
+                                <li>Long-term allergy relief</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>❌ Side Effects</h4>
+                            <ul>
+                                <li>Nasal irritation, nosebleeds</li>
+                                <li>Headache</li>
+                                <li>Sore throat</li>
+                                <li>Rare systemic effects with high doses</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="home-remedy">
+                        <h4>🌿 Natural Alternative: Nettle Leaf</h4>
+                        <p>May help reduce allergy symptoms due to its antihistamine and anti-inflammatory properties. Can be taken as a tea or supplement.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="comparison" class="tab-content">
+            <h2>Remedies Comparison</h2>
+            <p>Compare various home remedies and their effectiveness for common ailments.</p>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Ailment</th>
+                        <th>Home Remedy</th>
+                        <th>Mechanism / Benefits</th>
+                        <th>Considerations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Headache</td>
+                        <td>Peppermint Oil (topical)</td>
+                        <td>Relaxes muscles, provides cooling sensation.</td>
+                        <td>Apply to temples. Avoid eyes.</td>
+                    </tr>
+                    <tr>
+                        <td>Sore Throat</td>
+                        <td>Saltwater Gargle</td>
+                        <td>Reduces inflammation, kills bacteria.</td>
+                        <td>Warm water, 1/2 tsp salt. Gargle several times a day.</td>
+                    </tr>
+                    <tr>
+                        <td>Nausea</td>
+                        <td>Ginger Tea</td>
+                        <td>Anti-emetic properties.</td>
+                        <td>Fresh ginger slices steeped in hot water.</td>
+                    </tr>
+                    <tr>
+                        <td>Indigestion</td>
+                        <td>Chamomile Tea</td>
+                        <td>Calms digestive tract, reduces spasms.</td>
+                        <td>Drink after meals.</td>
+                    </tr>
+                    <tr>
+                        <td>Insomnia</td>
+                        <td>Valerian Root Tea</td>
+                        <td>Promotes relaxation and sleep.</td>
+                        <td>Drink 30-60 mins before bed. May cause drowsiness.</td>
+                    </tr>
+                    <tr>
+                        <td>Minor Cuts/Scrapes</td>
+                        <td>Honey (topical)</td>
+                        <td>Antimicrobial, promotes healing.</td>
+                        <td>Apply medical-grade honey. Cover with bandage.</td>
+                    </tr>
+                    <tr>
+                        <td>Muscle Soreness</td>
+                        <td>Epsom Salt Bath</td>
+                        <td>Magnesium absorption helps muscle relaxation.</td>
+                        <td>Add 1-2 cups to bath. Soak for 20 mins.</td>
+                    </tr>
+                    <tr>
+                        <td>Congestion</td>
+                        <td>Steam Inhalation with Eucalyptus</td>
+                        <td>Loosens mucus, opens airways.</td>
+                        <td>Hot water in bowl, add few drops of oil. Inhale with towel over head.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="chatbot" class="tab-content">
+            <h2>Drug Lookup Chatbot</h2>
+            <p>Ask our AI assistant about any drug or home remedy.</p>
+            <div class="chatbot-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">Hello! I'm your AI Drug Lookup Assistant. How can I help you today?</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your question...">
+                    <button id="sendChat">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for drugs (simplified for demonstration)
+        const drugsData = [
+            {
+                name: "Aspirin",
+                category: "pain",
+                formula: "C₉H₈O₄",
+                mw: "180.16 g/mol",
+                structure: "Salicylate derivative with acetyl group",
+                benefits: ["Effective pain relief", "Anti-inflammatory properties", "Reduces fever", "Cardiovascular protection", "Widely available and affordable"],
+                side_effects: ["Stomach irritation", "Bleeding risk", "Not suitable for children", "Drug interactions", "Allergic reactions possible"],
+                alternative: {
+                    name: "Willow Bark",
+                    description: "Contains salicin, which converts to salicylic acid in the body. Used traditionally for pain and inflammation. Less potent than aspirin but gentler on the stomach."
+                }
+            },
+            {
+                name: "Ibuprofen",
+                category: "pain",
+                formula: "C₁₃H₁₈O₂",
+                mw: "206.28 g/mol",
+                structure: "Propionic acid derivative (NSAID)",
+                benefits: ["Strong anti-inflammatory", "Effective pain relief", "Fever reduction", "Less stomach irritation than aspirin", "Available over-the-counter"],
+                side_effects: ["Kidney damage risk", "Cardiovascular risks", "GI side effects", "Not suitable during pregnancy", "Drug interactions"],
+                alternative: {
+                    name: "Turmeric",
+                    description: "Contains curcumin, a powerful anti-inflammatory compound. Studies show it can be as effective as ibuprofen for some types of pain without the side effects."
+                }
+            },
+            {
+                name: "Acetaminophen",
+                category: "pain",
+                formula: "C₈H₉NO₂",
+                mw: "151.16 g/mol",
+                structure: "Para-aminophenol derivative",
+                benefits: ["Effective pain relief", "Fever reduction", "Gentle on stomach", "Safe for children", "No blood thinning effects"],
+                side_effects: ["Liver damage risk", "No anti-inflammatory effects", "Easy to overdose", "Interactions with alcohol", "Hidden in many medications"],
+                alternative: {
+                    name: "Ginger",
+                    description: "Contains gingerols and shogaols with pain-relieving properties. Particularly effective for headaches and muscle pain. Also helps with nausea."
+                }
+            },
+            {
+                name: "Naproxen",
+                category: "pain",
+                formula: "C₁₄H₁₄O₃",
+                mw: "230.26 g/mol",
+                structure: "Propionic acid derivative",
+                benefits: ["Long-lasting pain relief", "Strong anti-inflammatory", "Effective for chronic pain", "Fewer doses needed"],
+                side_effects: ["Cardiovascular risks", "Stomach irritation", "Kidney problems", "Slower onset of action"],
+                alternative: {
+                    name: "Boswellia",
+                    description: "Also known as Indian frankincense, contains boswellic acids that reduce inflammation. Particularly effective for arthritis and chronic pain conditions."
+                }
+            },
+            {
+                name: "Tramadol",
+                category: "pain",
+                formula: "C₁₆H₂₅NO₂",
+                mw: "263.38 g/mol",
+                structure: "Synthetic opioid analgesic",
+                benefits: ["Effective for moderate pain", "Lower abuse potential than other opioids", "Dual mechanism of action", "Available in extended-release forms"],
+                side_effects: ["Nausea and vomiting", "Dizziness and drowsiness", "Constipation", "Seizure risk", "Dependence potential"],
+                alternative: {
+                    name: "Kratom",
+                    description: "Contains mitragynine and 7-hydroxymitragynine with pain-relieving properties. However, use with caution as it can be habit-forming and legal status varies."
+                }
+            },
+            {
+                name: "Lisinopril",
+                category: "heart",
+                formula: "C₂₁H₃₁N₃O₅",
+                mw: "405.5 g/mol",
+                structure: "ACE inhibitor",
+                benefits: ["Lowers blood pressure", "Protects heart and kidneys", "Reduces stroke risk", "Once-daily dosing"],
+                side_effects: ["Dry cough", "Hyperkalemia", "Angioedema (rare)", "Kidney problems"],
+                alternative: {
+                    name: "Hawthorn",
+                    description: "Contains oligomeric procyanidins that support heart health and may help lower blood pressure. Often combined with garlic and CoQ10 for cardiovascular support."
+                }
+            },
+            {
+                name: "Metoprolol",
+                category: "heart",
+                formula: "C₁₅H₂₅NO₃",
+                mw: "267.36 g/mol",
+                structure: "Beta-blocker",
+                benefits: ["Reduces heart rate", "Lowers blood pressure", "Prevents heart attacks", "Reduces anxiety symptoms"],
+                side_effects: ["Fatigue and dizziness", "Cold hands and feet", "Depression", "Bronchospasm"],
+                alternative: {
+                    name: "Magnesium",
+                    description: "Magnesium glycinate helps relax blood vessels and can lower blood pressure. Also supports heart rhythm and reduces stress-related heart palpitations."
+                }
+            },
+            {
+                name: "Simvastatin",
+                category: "heart",
+                formula: "C₂₅H₃₈O₅",
+                mw: "418.57 g/mol",
+                structure: "HMG-CoA reductase inhibitor",
+                benefits: ["Lowers cholesterol", "Reduces heart disease risk", "Prevents strokes", "Well-studied efficacy"],
+                side_effects: ["Muscle pain", "Liver problems", "Memory issues", "Diabetes risk"],
+                alternative: {
+                    name: "Red Yeast Rice",
+                    description: "Contains naturally occurring statins (monacolin K). Combined with CoQ10 and omega-3 fatty acids, it can help lower cholesterol naturally."
+                }
+            },
+            {
+                name: "Warfarin",
+                category: "heart",
+                formula: "C₁₉H₁₆O₄",
+                mw: "308.33 g/mol",
+                structure: "Vitamin K antagonist",
+                benefits: ["Prevents blood clots", "Reduces stroke risk", "Treats atrial fibrillation", "Well-established use"],
+                side_effects: ["Bleeding risk", "Requires regular monitoring", "Food interactions", "Drug interactions"],
+                alternative: {
+                    name: "Ginkgo Biloba",
+                    description: "Improves circulation and has mild blood-thinning properties. Should be used with caution and medical supervision, especially with other blood thinners."
+                }
+            },
+            {
+                name: "Metformin",
+                category: "diabetes",
+                formula: "C₄H₁₁N₅",
+                mw: "129.16 g/mol",
+                structure: "Biguanide",
+                benefits: ["Lowers blood glucose", "Weight loss friendly", "Cardiovascular benefits", "First-line diabetes treatment"],
+                side_effects: ["Nausea and diarrhea", "Lactic acidosis (rare)", "Vitamin B12 deficiency", "Metallic taste"],
+                alternative: {
+                    name: "Berberine",
+                    description: "Alkaloid found in goldenseal and barberry. Studies show it can lower blood sugar as effectively as metformin by improving insulin sensitivity."
+                }
+            },
+            {
+                name: "Glipizide",
+                category: "diabetes",
+                formula: "C₂₁H₂₇N₅O₄S",
+                mw: "445.54 g/mol",
+                structure: "Sulfonylurea",
+                benefits: ["Stimulates insulin release", "Rapid glucose reduction", "Inexpensive", "Once or twice daily dosing"],
+                side_effects: ["Hypoglycemia risk", "Weight gain", "Pancreatic exhaustion", "Skin reactions"],
+                alternative: {
+                    name: "Cinnamon",
+                    description: "Ceylon cinnamon contains compounds that improve insulin sensitivity and glucose metabolism."
+                }
+            },
+            {
+                name: "Amoxicillin",
+                category: "antibiotic",
+                formula: "C₁₆H₁₉N₃O₅S",
+                mw: "365.4 g/mol",
+                structure: "Penicillin-class antibiotic",
+                benefits: ["Broad-spectrum antibiotic", "Treats many bacterial infections", "Generally well-tolerated", "Safe for children"],
+                side_effects: ["Allergic reactions (rash, anaphylaxis)", "Diarrhea", "Nausea and vomiting", "Antibiotic resistance development"],
+                alternative: {
+                    name: "Garlic",
+                    description: "Contains allicin, which has natural antimicrobial properties. Can be used as a supportive measure for mild infections, but not a replacement for prescribed antibiotics."
+                }
+            },
+            {
+                name: "Azithromycin",
+                category: "antibiotic",
+                formula: "C₃₈H₇₂N₂O₁₂",
+                mw: "748.98 g/mol",
+                structure: "Macrolide antibiotic",
+                benefits: ["Effective for respiratory infections", "Short course of treatment", "Good tissue penetration", "Used for atypical bacteria"],
+                side_effects: ["GI upset", "QT prolongation (heart rhythm)", "Liver problems", "Drug interactions"],
+                alternative: {
+                    name: "Echinacea",
+                    description: "Boosts immune system and has some antiviral/antibacterial properties. Can help with common colds and flu, but not a substitute for antibiotics in serious infections."
+                }
+            },
+            {
+                name: "Sertraline",
+                category: "mental",
+                formula: "C₁₇H₁₇Cl₂N",
+                mw: "306.23 g/mol",
+                structure: "Selective Serotonin Reuptake Inhibitor (SSRI)",
+                benefits: ["Treats depression and anxiety", "Effective for OCD and PTSD", "Generally well-tolerated", "Less sedating than older antidepressants"],
+                side_effects: ["Nausea, diarrhea, insomnia", "Sexual dysfunction", "Weight changes", "Withdrawal symptoms"],
+                alternative: {
+                    name: "St. John's Wort",
+                    description: "Used for mild to moderate depression. Interacts with many medications, so consult a doctor before use. Not for severe depression."
+                }
+            },
+            {
+                name: "Alprazolam",
+                category: "mental",
+                formula: "C₁₇H₁₃ClN₄",
+                mw: "308.76 g/mol",
+                structure: "Benzodiazepine",
+                benefits: ["Rapid anxiety relief", "Effective for panic attacks", "Short-term use for acute anxiety"],
+                side_effects: ["Sedation, dizziness", "Dependence and withdrawal", "Memory impairment", "Abuse potential"],
+                alternative: {
+                    name: "Valerian Root",
+                    description: "Promotes relaxation and sleep. Can help with mild anxiety and insomnia. Non-addictive alternative."
+                }
+            },
+            {
+                name: "Omeprazole",
+                category: "stomach",
+                formula: "C₁₇H₁₉N₃O₃S",
+                mw: "345.42 g/mol",
+                structure: "Proton Pump Inhibitor (PPI)",
+                benefits: ["Reduces stomach acid", "Treats GERD and ulcers", "Long-lasting effect", "Available over-the-counter"],
+                side_effects: ["Headache, nausea, diarrhea", "Increased risk of infections", "Bone fractures with long-term use", "Vitamin B12 deficiency"],
+                alternative: {
+                    name: "Apple Cider Vinegar",
+                    description: "Can help balance stomach pH for some, but use with caution. Also, slippery elm and marshmallow root can soothe the digestive tract."
+                }
+            },
+            {
+                name: "Loperamide",
+                category: "stomach",
+                formula: "C₂₉H₃₃ClN₂O₂",
+                mw: "476.04 g/mol",
+                structure: "Opioid-receptor agonist",
+                benefits: ["Effective for diarrhea", "Slows bowel movements", "Available over-the-counter"],
+                side_effects: ["Constipation", "Abdominal cramps", "Dizziness", "Serious heart problems with high doses"],
+                alternative: {
+                    name: "BRAT Diet & Ginger Tea",
+                    description: "Bananas, rice, applesauce, and toast can help firm stools. Ginger tea can soothe an upset stomach and reduce nausea."
+                }
+            },
+            {
+                name: "Albuterol",
+                category: "respiratory",
+                formula: "C₁₃H₂₁NO₃",
+                mw: "239.31 g/mol",
+                structure: "Short-acting beta-agonist (SABA)",
+                benefits: ["Rapid relief for asthma attacks", "Opens airways quickly", "Used for exercise-induced bronchospasm"],
+                side_effects: ["Tremor, nervousness", "Increased heart rate", "Headache", "Tolerance with overuse"],
+                alternative: {
+                    name: "Eucalyptus Oil (in steam)",
+                    description: "Can help clear nasal passages and ease breathing when inhaled with steam. Not a substitute for asthma medication."
+                }
+            },
+            {
+                name: "Fluticasone",
+                category: "respiratory",
+                formula: "C₂₂H₂₉F₃O₅S",
+                mw: "444.53 g/mol",
+                structure: "Corticosteroid",
+                benefits: ["Reduces nasal inflammation", "Treats allergies and sinusitis", "Long-term allergy relief"],
+                side_effects: ["Nasal irritation, nosebleeds", "Headache", "Sore throat", "Rare systemic effects with high doses"],
+                alternative: {
+                    name: "Nettle Leaf",
+                    description: "May help reduce allergy symptoms due to its antihistamine and anti-inflammatory properties. Can be taken as a tea or supplement."
+                }
+            }
+        ];
+
+        // Function to display drugs based on search and filter
+        function displayDrugs(filter = 'all', searchTerm = '') {
+            const drugResultsDiv = document.getElementById('drugResults');
+            drugResultsDiv.innerHTML = ''; // Clear previous results
+
+            const categories = {
+                'pain': 'Pain Relief & Anti-inflammatory',
+                'heart': 'Heart & Blood Pressure',
+                'diabetes': 'Diabetes Management',
+                'antibiotic': 'Antibiotics',
+                'mental': 'Mental Health',
+                'stomach': 'Stomach & GI',
+                'respiratory': 'Respiratory'
+            };
+
+            // Group drugs by category
+            const groupedDrugs = {};
+            for (const key in categories) {
+                groupedDrugs[key] = [];
+            }
+
+            drugsData.forEach(drug => {
+                const matchesFilter = (filter === 'all' || drug.category === filter);
+                const matchesSearch = drug.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      drug.alternative.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+                if (matchesFilter && matchesSearch) {
+                    groupedDrugs[drug.category].push(drug);
+                }
+            });
+
+            for (const categoryKey in categories) {
+                if (groupedDrugs[categoryKey].length > 0) {
+                    const categoryHeader = document.createElement('div');
+                    categoryHeader.className = 'category-header';
+                    categoryHeader.textContent = categories[categoryKey];
+                    drugResultsDiv.appendChild(categoryHeader);
+
+                    groupedDrugs[categoryKey].forEach(drug => {
+                        const drugCard = document.createElement('div');
+                        drugCard.className = 'drug-card';
+                        drugCard.setAttribute('data-category', drug.category);
+                        drugCard.innerHTML = `
+                            <div class="drug-name">${drug.name}</div>
+                            <div class="chemical-formula">
+                                <strong>Chemical Formula:</strong> ${drug.formula}<br>
+                                <strong>Molecular Weight:</strong> ${drug.mw}<br>
+                                <strong>Structure:</strong> ${drug.structure}
+                            </div>
+                            <div class="pros-cons">
+                                <div class="pros">
+                                    <h4>✅ Benefits</h4>
+                                    <ul>
+                                        ${drug.benefits.map(b => `<li>${b}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div class="cons">
+                                    <h4>❌ Side Effects</h4>
+                                    <ul>
+                                        ${drug.side_effects.map(s => `<li>${s}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="home-remedy">
+                                <h4>🌿 Natural Alternative: ${drug.alternative.name}</h4>
+                                <p>${drug.alternative.description}</p>
+                            </div>
+                        `;
+                        drugResultsDiv.appendChild(drugCard);
+                    });
+                }
+            }
+
+            // If no drugs are found for the current search/filter, display a message
+            const totalDisplayedDrugs = Object.values(groupedDrugs).flat().length;
+            if (totalDisplayedDrugs === 0) {
+                drugResultsDiv.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No drugs found matching your criteria.</p>';
+            }
+        }
+
+        // Tab switching logic
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // If switching to database tab, re-display drugs
+            if (tabId === 'database') {
+                const currentFilter = document.querySelector('.filter-btn.active')?.dataset.category || 'all';
+                const currentSearchTerm = document.getElementById('drugSearch').value;
+                displayDrugs(currentFilter, currentSearchTerm);
+            }
+        }
+
+        // Category filtering logic
+        function filterByCategory(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active'); // 'event.target' refers to the clicked button
+
+            const searchTerm = document.getElementById('drugSearch').value;
+            displayDrugs(category, searchTerm);
+        }
+
+        // Search input logic
+        document.getElementById('drugSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const currentFilter = document.querySelector('.filter-btn.active')?.dataset.category || 'all';
+            displayDrugs(currentFilter, searchTerm);
+        });
+
+        // Chatbot logic
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChat');
+        const chatMessages = document.getElementById('chatMessages');
+
+        sendChatBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const userMessageText = chatInput.value.trim();
+            if (userMessageText === '') return;
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = userMessageText;
+            chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+
+            chatInput.value = ''; // Clear input
+
+            // Simulate bot typing
+            const botTypingDiv = document.createElement('div');
+            botTypingDiv.className = 'message bot-message';
+            botTypingDiv.textContent = 'AI is typing...';
+            chatMessages.appendChild(botTypingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Process user message and get bot response
+            const botResponse = await getBotResponse(userMessageText);
+
+            // Replace typing indicator with actual response
+            botTypingDiv.textContent = botResponse;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function getBotResponse(userMessage) {
+            const lowerCaseMessage = userMessage.toLowerCase();
+
+            // Check for drug information
+            for (const drug of drugsData) {
+                if (lowerCaseMessage.includes(drug.name.toLowerCase())) {
+                    return `Here's information about ${drug.name}:
+                            Chemical Formula: ${drug.formula}
+                            Molecular Weight: ${drug.mw}
+                            Structure: ${drug.structure}
+                            Benefits: ${drug.benefits.join(', ')}
+                            Side Effects: ${drug.side_effects.join(', ')}
+                            Natural Alternative: ${drug.alternative.name} - ${drug.alternative.description}`;
+                }
+            }
+
+            // Check for general home remedy questions
+            if (lowerCaseMessage.includes("home remedy") || lowerCaseMessage.includes("natural alternative")) {
+                return "I have information on various home remedies. You can check the 'Remedies Comparison' tab for common ailments and their natural alternatives.";
+            }
+
+            // Call the LLM for more general questions or if no specific drug is found
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    return text;
+                } else {
+                    return "I'm sorry, I couldn't get a response from the AI at this moment. Please try again.";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                return "I'm having trouble connecting to the AI. Please check your internet connection or try again later.";
+            }
+        }
+
+        // Initial display of drugs when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            displayDrugs('all', ''); // Display all drugs initially
+        });
+    </script>
+</body>
+</html>
